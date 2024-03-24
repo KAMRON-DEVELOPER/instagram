@@ -1,6 +1,6 @@
 import re
 import threading
-# import phonenumbers
+import phonenumbers
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from rest_framework.exceptions import ValidationError
@@ -17,7 +17,7 @@ def check_email_or_phone_number(input_data):
     if re.fullmatch(email_regex, input_data):
         input_data = "email"
 
-    if re.fullmatch(phone_number_regex, input_data):
+    elif re.fullmatch(phone_number_regex, input_data):
         input_data = "phone_number"
 
     else:

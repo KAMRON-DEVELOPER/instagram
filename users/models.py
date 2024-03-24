@@ -96,6 +96,7 @@ class User(AbstractUser, BaseModel):
 
 
 class UserConfirmation(BaseModel):
+    '''code, verify_type, user, expiration_time, is_confirmed'''
     code = models.CharField(max_length=4)
     verify_type = models.CharField(choices=AUTH_TYPE.choices, default=AUTH_TYPE.email)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='verify_code')

@@ -62,13 +62,15 @@ class User(AbstractUser, BaseModel):
             self.email = normalized_email
     
     def check_username(self):
-        temp_username = generate_username()[0][:6]
-        while User.objects.filter(username=temp_username):
-            temp_username += f"_{randint(1000, 9999)}"
-        self.username = temp_username
+        if not self.username:
+            temp_username = generate_username()[0][:6]
+            while User.objects.filter(username=temp_username):
+                temp_username += f"_{randint(1000, 9999)}"
+            self.username = temp_username
 
     def check_pass(self):
-        self.password = f"{"".join(choice(string.digits) for _ in range(8))}"
+        if not self.password:
+            self.password = f"{"".join(choice(string.digits) for _ in range(8))}"
 
     def hash_pass(self):
         if not self.password.startswith('pbkdf2_sha256'):
@@ -82,14 +84,13 @@ class User(AbstractUser, BaseModel):
         }
 
     def clean(self):
-        self.check_email()
         self.check_username()
+        self.check_email()
         self.check_pass()
         self.hash_pass()
 
     def save(self, *args, **kwargs):
-        if not self.pk:
-            self.clean()
+        self.clean()
         super(User, self).save(*args, **kwargs)
 
 

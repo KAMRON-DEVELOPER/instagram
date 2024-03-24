@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-from shared.utiitys import check_email_or_phone_number
+from shared.utiitys import check_email_or_phone_number, send_email
 from .models import User, UserConfirmation, AUTH_STATUS, AUTH_TYPE, USER_GENDER, USER_ROLES
+from django.core.mail import send_mail
 
 
 
@@ -19,6 +20,20 @@ class SignUpSerializer(serializers.ModelSerializer):
             'auth_type': {'read_only': True, 'required': False},
             'auth_status': {'read_only': True, 'required': False}
         }
+        
+    def create(self, validated_data):
+        user = super(SignUpSerializer, self).create(validated_data)
+        print(user)
+        if user.auth_type == AUTH_TYPE.email:
+            code = user.create_verify_code(AUTH_TYPE.email)
+            print('code: ', code)
+            send_email(user.email, code)
+        elif user.auth_type == AUTH_TYPE.phone_number:
+            code = user.create_verify_code(AUTH_TYPE.phone_number)
+            print('code: ', code)
+            send_mail(user.email, code)
+        user.save()
+        return user
         
     def validate(self, data):
         super(SignUpSerializer, self).validate(data)
@@ -51,4 +66,7 @@ class SignUpSerializer(serializers.ModelSerializer):
             raise ValidationError(data)
 
         return data
+    
+    
+    
     

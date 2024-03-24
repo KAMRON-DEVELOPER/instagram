@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-from shared.utiitys import check_email_or_phone_number, send_email
+from shared.utiitys import check_email_or_phone_number, send_email, send_phone_code
 from .models import User, UserConfirmation, AUTH_STATUS, AUTH_TYPE, USER_GENDER, USER_ROLES
 from django.core.mail import send_mail
 
@@ -31,7 +31,7 @@ class SignUpSerializer(serializers.ModelSerializer):
         elif user.auth_type == AUTH_TYPE.phone_number:
             code = user.create_verify_code(AUTH_TYPE.phone_number)
             print('code: ', code)
-            send_mail(user.phone_number, code)
+            send_phone_code(user.phone_number, code)
         user.save()
         return user
         

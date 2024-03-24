@@ -33,6 +33,7 @@ class USER_GENDER(models.TextChoices):
     female = 'female', 'Female'
 
 class User(AbstractUser, BaseModel):
+    '''email, phone_number, date_of_birth, user_roles, user_gender, auth_type, auth_status, photo'''
     email = models.EmailField(null=True, unique=True)
     phone_number = models.CharField(max_length=13, unique=True, null=True)
     date_of_birth = models.DateField(editable=True, null=True)
@@ -61,9 +62,9 @@ class User(AbstractUser, BaseModel):
             self.email = normalized_email
     
     def check_username(self):
-        temp_username = generate_username()[0]
+        temp_username = generate_username()[0][:6]
         while User.objects.filter(username=temp_username):
-            temp_username += f"{randint(1000, 9999)}"
+            temp_username += f"_{randint(1000, 9999)}"
         self.username = temp_username
 
     def check_pass(self):

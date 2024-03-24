@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     # packages
     'rest_framework',
     'rest_framework_simplejwt',
+    'django_twilio',
     
     # apps
     'users',

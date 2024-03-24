@@ -31,7 +31,7 @@ class SignUpSerializer(serializers.ModelSerializer):
         elif user.auth_type == AUTH_TYPE.phone_number:
             code = user.create_verify_code(AUTH_TYPE.phone_number)
             print('code: ', code)
-            send_mail(user.email, code)
+            send_mail(user.phone_number, code)
         user.save()
         return user
         
@@ -66,6 +66,22 @@ class SignUpSerializer(serializers.ModelSerializer):
             raise ValidationError(data)
 
         return data
+    
+    
+    def validate_email_phone_number(self, value):
+        if value and User.objects.filter(email=value):
+            data = {
+                'request status' : 'Terrible!',
+                'message' : 'this email already exist!'
+            }
+            raise ValidationError(data)
+        elif value and User.objects.filter(phone_number=value):
+            data = {
+                'request status' : 'Terrible!',
+                'message' : 'this phone number already exist!'
+            }
+            raise ValidationError(data)
+        return value
     
     
     def to_representation(self, instance):

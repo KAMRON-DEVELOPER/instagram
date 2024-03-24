@@ -8,7 +8,6 @@ from datetime import datetime, timedelta
 from shared.models import BaseModel
 from random_username.generate import generate_username
 from rest_framework_simplejwt.tokens import RefreshToken
-# from django.db import models
 
 
 

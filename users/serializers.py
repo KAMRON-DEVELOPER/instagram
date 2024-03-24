@@ -68,5 +68,6 @@ class SignUpSerializer(serializers.ModelSerializer):
         return data
     
     
-    
-    
+    def to_representation(self, instance):
+        data = super(SignUpSerializer, self).to_representation(instance)
+        data.update(instance.tokens())

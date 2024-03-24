@@ -56,7 +56,7 @@ class User(AbstractUser, BaseModel):
         return code
 
     def check_email(self):
-        if self.email:
+        if not self.email:
             normalized_email = self.email.lower()
             self.email = normalized_email
     

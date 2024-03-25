@@ -69,11 +69,11 @@ class GetNewVerifyApiView(APIView):
             code = user.create_verify_code(AUTH_TYPE.phone_number)
             send_email(user.phone_number, code)
         else:
-            er={
+            data={
                     'request status: ' : 'Unknown!',
                     'message: ' : 'Somthing went wrong in creating code for you?!'
             }
-            raise ValidationError(er)
+            raise ValidationError(data)
         
         return Response(
             {

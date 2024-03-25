@@ -1,19 +1,24 @@
 from django.shortcuts import render
-from .models import AUTH_STATUS, User, UserConfirmation
+
+from shared.utiitys import send_email
+from .models import AUTH_STATUS, AUTH_TYPE, User, UserConfirmation
 from .serializers import SignUpSerializer
 from rest_framework import permissions
 from rest_framework.generics import CreateAPIView
 from rest_framework.views import APIView
 from rest_framework.decorators import permission_classes
-from datetime import datetime
+from datetime import datetime, timedelta
 from rest_framework.validators import ValidationError
 from rest_framework.response import Response
+
+
 
 
 class CreateUserView(CreateAPIView):
     model = User
     serializer_class = SignUpSerializer
     permission_classes = (permissions.AllowAny,)
+
 
 
 class VerifyApiView(APIView):
@@ -30,14 +35,12 @@ class VerifyApiView(APIView):
                 'message': user.auth_status,
                 'access': user.token()['access'],
                 'refresh': user.token()['refresh_token']
-            }
-        )
+            })
         
     @staticmethod
     def check_verify(user, code):
         iscode_exist = user.verify_code.filter(expiration_time__gte=datetime.now(), code=code, is_confirmed=False)
-        exp_time = user.verify_code.all() # expiration_time
-        print(exp_time)
+        exp_time = user.verify_code.all()
         if not iscode_exist.exists():
             data = {
                 'request status': 'Yomon',
@@ -50,4 +53,51 @@ class VerifyApiView(APIView):
             user.auth_status = AUTH_STATUS.verified
             user.save()
         return True
-        
+
+
+
+class GetNewVerifyApiView(APIView):
+    # permission_classes = (permissions.IsAuthenticated,)
+    print("GetNewVerifyApiView yetib keldi!")
+    def get(self, request, *args, **kwargs):
+        user = self.request.user
+        print(user.__str__())
+        self.check_verify_user(user)
+        if user.auth_type == AUTH_TYPE.email:
+            code = user.create_verify_code(AUTH_TYPE.email)
+            send_email(user.email, code)
+        elif user.auth_type == AUTH_TYPE.phone_number:
+            code = user.create_verify_code(AUTH_TYPE.phone_number)
+            send_email(user.phone_number, code)
+        else:
+            err = {
+                'request status: ' : 'Unknown!',
+                   'message: ' : 'Somthing went wrong in creating code for you?!'
+            }
+            raise ValidationError(err)
+        return Response(
+            data={
+                'request status': 'Good!!!!!',
+                'message': 'your code sent again!'
+            })
+
+    @staticmethod
+    def check_verify_user(user):
+        iscode_expired = user.verify_code.filter(expiration_time__gte=datetime.now(), is_confirmed=False)
+        if iscode_expired.exists():
+            data = {
+                "message": "Kodingiz hali ishlatish uchun yaroqli. Biroz kutib turing"
+            }
+            raise ValidationError(data)
+
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            

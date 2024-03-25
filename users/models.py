@@ -108,7 +108,7 @@ class UserConfirmation(BaseModel):
 
     def save(self, *args, **kwargs):
         if self.verify_type == AUTH_TYPE.email:
-            self.expiration_time = datetime.now() + timedelta(minutes=5)
+            self.expiration_time = datetime.now() + timedelta(minutes=2)
         else:
             self.expiration_time = datetime.now() + timedelta(minutes=2)
         super(UserConfirmation, self).save(*args, **kwargs)

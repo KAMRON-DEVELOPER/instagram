@@ -36,9 +36,9 @@ class VerifyApiView(APIView):
     @staticmethod
     def check_verify(user, code):
         iscode_exist = user.verify_code.filter(expiration_time__gte=timezone.now(), code=code, is_confirmed=False)
-        exp_time = user.verify_code.objects.get('expiration_time')
+        exp_time = user.verify_code.get().expiration_time.all() # expiration_time
         print(exp_time)
-        if not iscode_exist.exists():
+        if iscode_exist.exists():
             data = {
                 'request status': 'Yomon',
                 'message': 'you verificaton code already expired.'

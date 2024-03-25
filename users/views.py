@@ -57,11 +57,10 @@ class VerifyApiView(APIView):
 
 
 class GetNewVerifyApiView(APIView):
-    # permission_classes = (permissions.IsAuthenticated,)
-    print("GetNewVerifyApiView yetib keldi!")
+    print("GetNewVerifyApiView ishga tushdi!")
+    
     def get(self, request, *args, **kwargs):
         user = self.request.user
-        print(user.__str__())
         self.check_verify_user(user)
         if user.auth_type == AUTH_TYPE.email:
             code = user.create_verify_code(AUTH_TYPE.email)
@@ -70,21 +69,22 @@ class GetNewVerifyApiView(APIView):
             code = user.create_verify_code(AUTH_TYPE.phone_number)
             send_email(user.phone_number, code)
         else:
-            err = {
-                'request status: ' : 'Unknown!',
-                   'message: ' : 'Somthing went wrong in creating code for you?!'
+            err={
+                    'request status: ' : 'Unknown!',
+                    'message: ' : 'Somthing went wrong in creating code for you?!'
             }
             raise ValidationError(err)
+        
         return Response(
-            data={
+            {
                 'request status': 'Good!!!!!',
                 'message': 'your code sent again!'
             })
 
     @staticmethod
     def check_verify_user(user):
-        iscode_expired = user.verify_code.filter(expiration_time__gte=datetime.now(), is_confirmed=False)
-        if iscode_expired.exists():
+        iscode_exist = user.verify_code.filter(expiration_time__gte=datetime.now(), is_confirmed=False)
+        if iscode_exist.exists():
             data = {
                 "message": "Kodingiz hali ishlatish uchun yaroqli. Biroz kutib turing"
             }

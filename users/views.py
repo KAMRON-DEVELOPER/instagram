@@ -23,7 +23,7 @@ class VerifyApiView(APIView):
         user = request.user
         code = request.data.get('code')
         
-        self.check_verify()
+        self.check_verify(user, code)
         
     def check_verify(user, code):
         iscode_exist = user.verify_code.filter(expiration_time__gte=timezone.now(), code=code, is_confirmed=False)

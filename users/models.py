@@ -100,17 +100,16 @@ class UserConfirmation(BaseModel):
     code = models.CharField(max_length=4)
     verify_type = models.CharField(choices=AUTH_TYPE.choices, default=AUTH_TYPE.email)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='verify_code')
-    expiration_time = models.DateTimeField(auto_now_add=True)
+    expiration_time = models.DateTimeField(null=True)
     is_confirmed = models.BooleanField(default=False)
 
     def __str__(self):
         return f"username: {str(self.user.__str__())}: {self.expiration_time}"
 
     def save(self, *args, **kwargs):
-        if not self.pk:
-            if self.verify_type == AUTH_TYPE.email:
-                self.expiration_time = datetime.now() + timedelta(minutes=5)
-            else:
-                self.expiration_time = datetime.now() + timedelta(minutes=2)
+        if self.verify_type == AUTH_TYPE.email:
+            self.expiration_time = datetime.now() + timedelta(minutes=5)
+        else:
+            self.expiration_time = datetime.now() + timedelta(minutes=2)
         super(UserConfirmation, self).save(*args, **kwargs)
 

@@ -5,7 +5,7 @@ from rest_framework import permissions
 from rest_framework.generics import CreateAPIView
 from rest_framework.views import APIView
 from rest_framework.decorators import permission_classes
-from django.utils import timezone
+from datetime import datetime
 from rest_framework.validators import ValidationError
 from rest_framework.response import Response
 
@@ -27,15 +27,15 @@ class VerifyApiView(APIView):
         return Response(
             data={
                 'request status': 'Well',
-                'message': user.AUTH_STATUS,
+                'message': user.auth_status,
                 'access': user.token()['access'],
-                'refresh': user.token()['refresh']
+                'refresh': user.token()['refresh_token']
             }
         )
         
     @staticmethod
     def check_verify(user, code):
-        iscode_exist = user.verify_code.filter(expiration_time__gte=timezone.now(), code=code, is_confirmed=False)
+        iscode_exist = user.verify_code.filter(expiration_time__gte=datetime.now(), code=code, is_confirmed=False)
         exp_time = user.verify_code.all() # expiration_time
         print(exp_time)
         if not iscode_exist.exists():

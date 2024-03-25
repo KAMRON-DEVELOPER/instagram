@@ -24,9 +24,6 @@ class VerifyApiView(APIView):
         code = request.data.get('code')
         
         self.check_verify(user, code)
-        
-    def check_verify(user, code):
-        iscode_exist = user.verify_code.filter(expiration_time__gte=timezone.now(), code=code, is_confirmed=False)
         return Response(
             data={
                 'request status': 'Well',
@@ -35,6 +32,10 @@ class VerifyApiView(APIView):
                 'refresh': user.token()['refresh']
             }
         )
+        
+    @staticmethod
+    def check_verify(user, code):
+        iscode_exist = user.verify_code.filter(expiration_time__gte=timezone.now(), code=code, is_confirmed=False)
         
         if not iscode_exist.exist():
             data = {

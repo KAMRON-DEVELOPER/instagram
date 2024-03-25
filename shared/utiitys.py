@@ -65,6 +65,7 @@ def send_email(email, code):
         }
     )
 
+# pip install twilio
 def send_phone_code(phone, code):
     account_sid = config('account_sid')
     auth_token = config('auth_token')

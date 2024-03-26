@@ -94,12 +94,14 @@ class GetNewVerifyApiView(APIView):
             
 
 class ChangeUser(APIView):
+    permission_classes = (permissions.AllowAny,)
+    
     print("ChangeUserPer view ishladi!")
     
     def post(self, request, *args, **kwargs):
-        first_name = self.request['first_name']
+        first_name = self.request
         print(first_name)
-            
+        return Response({"first_m=name" : first_name})
             
             
             

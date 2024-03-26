@@ -3,6 +3,7 @@ from rest_framework.exceptions import ValidationError
 from shared.utiitys import check_email_or_phone_number, send_email, send_phone_code
 from .models import User, UserConfirmation, AUTH_STATUS, AUTH_TYPE, USER_GENDER, USER_ROLES
 from django.core.mail import send_mail
+from django.contrib.auth.password_validation import validate_password
 
 
 
@@ -108,24 +109,15 @@ class ChangeUserData(serializers.Serializer):
         password = data.get('password')
         confirm_password = data.get('confirm_password')
         
-        if not first_name:
-            err = {'request status' : 'bad 404', 'message' : 'you should enter first name!'}
-            raise ValidationError(err)
-        elif last_name:
-            err = {'request status' : 'bad 404', 'message' : 'you should enter last name!'}
-            raise ValidationError(err)
-        elif username:
-            err = {'request status' : 'bad 404', 'message' : 'you should enter username!'}
-            raise ValidationError(err)
-        elif password:
-            err = {'request status' : 'bad 404', 'message' : 'you should enter password!'}
-            raise ValidationError(err)
-        elif confirm_password:
-            err = {'request status' : 'bad 404', 'message' : 'you should enter  confirm password!'}
-            raise ValidationError(err)
-        elif password != confirm_password:
-            err = {'request status' : 'bad 404', 'message' : 'your password and confirm password must be same!'}
-            raise ValidationError(err)
+        if password != confirm_password:
+            raise ValidationError(
+                {
+                    'request status' : 'bad 404',
+                    'message' : 'your password and confirm password must be the same!'
+                }
+            )
+        if password:
+            validate_password
         
     
 

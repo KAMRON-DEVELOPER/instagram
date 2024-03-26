@@ -57,7 +57,7 @@ class VerifyApiView(APIView):
 
 
 class GetNewVerifyApiView(APIView):
-    print("GetNewVerifyApiView ishga tushdi!")
+    permission_classes = (permissions.IsAuthenticated,)
     
     def get(self, request, *args, **kwargs):
         user = self.request.user
@@ -94,7 +94,7 @@ class GetNewVerifyApiView(APIView):
             
 
 class ChangeUserView(APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
     
     print("ChangeUser view ishladi!")
     
@@ -107,11 +107,11 @@ class ChangeUserView(APIView):
 
 class ChangeUserInformationView(UpdateAPIView):
     permission_classes = (permissions.IsAuthenticated,)
-    
-    class Meta:
-        model = User
-        serializer_class = ChangeUserData()          
+    serializer_class = ChangeUserData()
+    http_method_names = ['patch', 'put']     
             
-            
+    def get_object(self):
+        return super().get_object()            
+
             
             

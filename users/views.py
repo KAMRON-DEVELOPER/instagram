@@ -4,7 +4,7 @@ from shared.utiitys import send_email
 from .models import AUTH_STATUS, AUTH_TYPE, User, UserConfirmation
 from .serializers import SignUpSerializer, ChangeUserData
 from rest_framework import permissions
-from rest_framework.generics import CreateAPIView
+from rest_framework.generics import CreateAPIView, UpdateAPIView
 from rest_framework.views import APIView
 from rest_framework.decorators import permission_classes
 from datetime import datetime, timedelta
@@ -93,10 +93,10 @@ class GetNewVerifyApiView(APIView):
             
             
 
-class ChangeUser(APIView):
+class ChangeUserView(APIView):
     permission_classes = (permissions.AllowAny,)
     
-    print("ChangeUserPer view ishladi!")
+    print("ChangeUser view ishladi!")
     
     def post(self, request, *args, **kwargs):
         first_name = self.request
@@ -104,7 +104,13 @@ class ChangeUser(APIView):
         return Response({"first_m=name" : first_name})
             
             
-            
+
+class ChangeUserInformationView(UpdateAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    
+    class Meta:
+        model = User
+        serializer_class = ChangeUserData()          
             
             
             

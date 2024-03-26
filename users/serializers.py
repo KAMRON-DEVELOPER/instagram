@@ -101,7 +101,6 @@ class ChangeUserData(serializers.Serializer):
     username = serializers.CharField(write_only=True, required=True)
     password = serializers.CharField(write_only=True, required=True)
     confirm_password = serializers.CharField(write_only=True, required=True)
-    print('first_name: ', first_name)
     
     def validate(self, data):
         password = data.get('password')
@@ -121,25 +120,59 @@ class ChangeUserData(serializers.Serializer):
     
     def validate_username(self, data):
         username = data.get('username')
-        if len(username) < 3 or len(username) > 15 or username.isnumeric():
+        if len(username) < 3 or len(username) > 15 or (char.isdigit() for char in username.split(' ')):
             raise ValidationError(
                 {
                     'request status' : 'bad 404',
                     'message' : 'your username is not valid!'
                 }
             )
+        return username
     
-    def validate_names(self, first_name, last_name):
-        for data in [first_name, last_name]:
-            if len(data) < 3 or len(data) > 15 or data.isnumeric():
-                raise ValidationError(
-                    {
-                        'request status' : 'bad 404',
-                        'message' : 'your first name or last name is not valid!'
-                    }
-                )
-                break
+    def validate_first_name(self, data):
+        first_name = data.get('first_name')
+        if len(first_name) < 3 or len(first_name) > 15 or bool(re.search(r'\d', first_name)):
+            raise ValidationError(
+                {
+                    'request status' : 'bad 404',   
+                    'message' : 'your first name or last name is not valid!'
+                }
+            )
+        return first_name
         
+    def validate_last_name(self, data):
+        last_name = data.get('last_name')
+        if len(last_name) < 3 or len(last_name) > 15 or bool(re.search(r'\d', last_name)):
+            raise ValidationError(
+                {
+                    'request status' : 'bad 404',   
+                    'message' : 'your first name or last name is not valid!'
+                }
+            )
+        return last_name
+    
+    def update(self, instance, validated_data):
+        instance.username = validated_data.get('username', instance.username)
+        instance.first_name = validated_data.get('first_name', instance.first_name)
+        instance.last_name = validated_data.get('last_name', instance.last_name)
+        instance.password = validated_data.get('password', instance.password)
+
+        if validated_data.get('password'):
+            instance.set_password(validated_data.get('password'))
+        if instance.auth_status == AUTH_STATUS.verified:
+            instance.auth_status = AUTH_STATUS.done
+        instance.save()
+        return instance
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
 
 

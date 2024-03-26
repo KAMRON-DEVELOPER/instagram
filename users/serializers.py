@@ -89,3 +89,30 @@ class SignUpSerializer(serializers.ModelSerializer):
         data.update(instance.token())
         
         return data
+
+
+
+
+class ChangeUserData(serializers.Serializer):
+    first_name = serializers.CharField(write_only=True, required=True)
+    last_name = serializers.CharField(write_only=True, required=True)
+    username = serializers.CharField(write_only=True, required=True)
+    password = serializers.CharField(write_only=True, required=True)
+    
+    def __init__(self, *args, **kwargs):
+        super(ChangeUserData, self).__init__(*args, **kwargs)
+        self.fields['confirm_password'] = serializers.CharField(write_only=True, required=True)
+
+
+class ChangeUserInfo(serializers.ModelSerializer):
+    
+    def __init__(self, *args, **kwargs):
+        super(ChangeUserData, self).__init__(*args, **kwargs)
+        self.fields['confirm_password'] = serializers.CharField(write_only=True, required=True)
+    class Meta:
+        model = User
+        fields = ('username', 'password')
+        
+        
+
+

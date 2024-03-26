@@ -4,6 +4,7 @@ from shared.utiitys import check_email_or_phone_number, send_email, send_phone_c
 from .models import User, UserConfirmation, AUTH_STATUS, AUTH_TYPE, USER_GENDER, USER_ROLES
 from django.core.mail import send_mail
 from django.contrib.auth.password_validation import validate_password
+import re
 
 
 
@@ -103,9 +104,6 @@ class ChangeUserData(serializers.Serializer):
     print('first_name: ', first_name)
     
     def validate(self, data):
-        first_name = data.get('first_name')
-        last_name = data.get('last_name')
-        username = data.get('username')
         password = data.get('password')
         confirm_password = data.get('confirm_password')
         
@@ -117,7 +115,30 @@ class ChangeUserData(serializers.Serializer):
                 }
             )
         if password:
-            validate_password
+            validate_password(password=password)
+            validate_password(password=confirm_password)
+        return data
+    
+    def validate_username(self, data):
+        username = data.get('username')
+        if len(username) < 3 or len(username) > 15 or username.isnumeric():
+            raise ValidationError(
+                {
+                    'request status' : 'bad 404',
+                    'message' : 'your username is not valid!'
+                }
+            )
+    
+    def validate_names(self, first_name, last_name):
+        for data in [first_name, last_name]:
+            if len(data) < 3 or len(data) > 15 or data.isnumeric():
+                raise ValidationError(
+                    {
+                        'request status' : 'bad 404',
+                        'message' : 'your first name or last name is not valid!'
+                    }
+                )
+                break
         
     
 

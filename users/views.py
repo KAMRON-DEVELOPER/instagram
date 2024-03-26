@@ -2,7 +2,7 @@ from django.shortcuts import render
 
 from shared.utiitys import send_email
 from .models import AUTH_STATUS, AUTH_TYPE, User, UserConfirmation
-from .serializers import SignUpSerializer, ChangeUserData
+from .serializers import SignUpSerializer, ChangeUserData, ChangeUserPhotoSerializer
 from rest_framework import permissions
 from rest_framework.generics import CreateAPIView, UpdateAPIView
 from rest_framework.views import APIView
@@ -107,11 +107,56 @@ class ChangeUserView(APIView):
 
 class ChangeUserInformationView(UpdateAPIView):
     permission_classes = (permissions.IsAuthenticated,)
-    serializer_class = ChangeUserData()
+    serializer_class = ChangeUserData
     http_method_names = ['patch', 'put']     
             
     def get_object(self):
-        return super().get_object()            
+        return self.request.user
+    
+    def update(self, request, *args, **kwargs):
+        super(ChangeUserInformationView, self).update(request, *args, **kwargs)        
 
-            
-            
+        return Response(
+            {
+                'request status' : 'ok 200',
+                'message' : 'user information has been updated!',
+                'auth_status' : self.request.user.auth_status
+            }
+        )
+        
+    def partial_update(self, request, *args, **kwargs):
+        super(ChangeUserInformationView, self).partial_update(request, *args, **kwargs)        
+
+        return Response(
+            {
+                'request status' : 'ok 200',
+                'message' : 'user information has been updated!',
+                'auth_status' : self.request.user.auth_status
+            }
+        )
+
+
+
+class ChangeUserPhotoView(UpdateAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    
+    def put(self, request, *args, **kwargs):
+        serializer = ChangeUserPhotoSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            user = request.user
+            serializer.update(user, serializer.validated_data)
+            return Response(
+                {
+                    'request status' : 'ok 200',
+                    'message' : 'your photo has been updated!'
+                }
+            )
+        return Response(
+            {
+                    'request status' : 'bad 400',
+                    'message' : 'issue occured while updating your photo!',
+                    'errors' : serializer.errors
+                }
+        )
+

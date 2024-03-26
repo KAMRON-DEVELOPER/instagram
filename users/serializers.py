@@ -5,6 +5,7 @@ from .models import User, UserConfirmation, AUTH_STATUS, AUTH_TYPE, USER_GENDER,
 from django.core.mail import send_mail
 from django.contrib.auth.password_validation import validate_password
 import re
+from django.core.validators import FileExtensionValidator
 
 
 
@@ -103,8 +104,8 @@ class ChangeUserData(serializers.Serializer):
     confirm_password = serializers.CharField(write_only=True, required=True)
     
     def validate(self, data):
-        password = data.get('password')
-        confirm_password = data.get('confirm_password')
+        password = data.get('password', None)
+        confirm_password = data.get('confirm_password', None)
         
         if password != confirm_password:
             raise ValidationError(
@@ -118,9 +119,8 @@ class ChangeUserData(serializers.Serializer):
             validate_password(password=confirm_password)
         return data
     
-    def validate_username(self, data):
-        username = data.get('username')
-        if len(username) < 3 or len(username) > 15 or (char.isdigit() for char in username.split(' ')):
+    def validate_username(self, username):
+        if len(username) < 3 or len(username) > 15 or bool(re.search(r'\d', username)):
             raise ValidationError(
                 {
                     'request status' : 'bad 404',
@@ -129,8 +129,7 @@ class ChangeUserData(serializers.Serializer):
             )
         return username
     
-    def validate_first_name(self, data):
-        first_name = data.get('first_name')
+    def validate_first_name(self, first_name):
         if len(first_name) < 3 or len(first_name) > 15 or bool(re.search(r'\d', first_name)):
             raise ValidationError(
                 {
@@ -140,8 +139,7 @@ class ChangeUserData(serializers.Serializer):
             )
         return first_name
         
-    def validate_last_name(self, data):
-        last_name = data.get('last_name')
+    def validate_last_name(self, last_name):
         if len(last_name) < 3 or len(last_name) > 15 or bool(re.search(r'\d', last_name)):
             raise ValidationError(
                 {
@@ -164,27 +162,29 @@ class ChangeUserData(serializers.Serializer):
         instance.save()
         return instance
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+class ChangeUserPhotoSerializer(serializers.Serializer):
+    photo = serializers.ImageField(validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png'])])
+        
+    def update(self, instance, validated_data):
+        photo = validated_data.get('photo')
+        if photo:
+            instance.photo = validated_data.get('photo', instance.photo)
+            instance.auth_status = AUTH_STATUS.photo
+            instance.save()    
+        else:
+            raise ValidationError(
+                {
+                    'request status' : 'bad 404',
+                    'message' : 'you have not upload any photo!'
+                }
+            )
+        return instance
+        
 
 
-class ChangeUserInfo(serializers.ModelSerializer):
-    
-    def __init__(self, *args, **kwargs):
-        super(ChangeUserData, self).__init__(*args, **kwargs)
-        self.fields['confirm_password'] = serializers.CharField(write_only=True, required=True)
-    class Meta:
-        model = User
-        fields = ('username', 'password')
-        
-        
+
+
+
 
 

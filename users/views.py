@@ -2,7 +2,7 @@ from django.shortcuts import render
 
 from shared.utiitys import send_email
 from .models import AUTH_STATUS, AUTH_TYPE, User, UserConfirmation
-from .serializers import SignUpSerializer
+from .serializers import SignUpSerializer, ChangeUserData
 from rest_framework import permissions
 from rest_framework.generics import CreateAPIView
 from rest_framework.views import APIView
@@ -92,7 +92,13 @@ class GetNewVerifyApiView(APIView):
 
             
             
-            
+
+class ChangeUser(APIView):
+    print("ChangeUserPer view ishladi!")
+    
+    def post(self, request, *args, **kwargs):
+        first_name = self.request['first_name']
+        print(first_name)
             
             
             

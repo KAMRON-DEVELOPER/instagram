@@ -98,10 +98,36 @@ class ChangeUserData(serializers.Serializer):
     last_name = serializers.CharField(write_only=True, required=True)
     username = serializers.CharField(write_only=True, required=True)
     password = serializers.CharField(write_only=True, required=True)
+    confirm_password = serializers.CharField(write_only=True, required=True)
+    print('first_name: ', first_name)
     
-    def __init__(self, *args, **kwargs):
-        super(ChangeUserData, self).__init__(*args, **kwargs)
-        self.fields['confirm_password'] = serializers.CharField(write_only=True, required=True)
+    def validate(self, data):
+        first_name = data.get('first_name')
+        last_name = data.get('last_name')
+        username = data.get('username')
+        password = data.get('password')
+        confirm_password = data.get('confirm_password')
+        
+        if not first_name:
+            err = {'request status' : 'bad 404', 'message' : 'you should enter first name!'}
+            raise ValidationError(err)
+        elif last_name:
+            err = {'request status' : 'bad 404', 'message' : 'you should enter last name!'}
+            raise ValidationError(err)
+        elif username:
+            err = {'request status' : 'bad 404', 'message' : 'you should enter username!'}
+            raise ValidationError(err)
+        elif password:
+            err = {'request status' : 'bad 404', 'message' : 'you should enter password!'}
+            raise ValidationError(err)
+        elif confirm_password:
+            err = {'request status' : 'bad 404', 'message' : 'you should enter  confirm password!'}
+            raise ValidationError(err)
+        elif password != confirm_password:
+            err = {'request status' : 'bad 404', 'message' : 'your password and confirm password must be same!'}
+            raise ValidationError(err)
+        
+    
 
 
 class ChangeUserInfo(serializers.ModelSerializer):

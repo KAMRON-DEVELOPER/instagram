@@ -2,7 +2,7 @@ from django.shortcuts import render
 
 from shared.utiitys import send_email
 from .models import AUTH_STATUS, AUTH_TYPE, User, UserConfirmation
-from .serializers import SignUpSerializer, ChangeUserData, ChangeUserPhotoSerializer
+from .serializers import SignUpSerializer, ChangeUserData, ChangeUserPhotoSerializer, LoginSerializer
 from rest_framework import permissions
 from rest_framework.generics import CreateAPIView, UpdateAPIView
 from rest_framework.views import APIView
@@ -159,4 +159,12 @@ class ChangeUserPhotoView(UpdateAPIView):
                     'errors' : serializer.errors
                 }
         )
+
+
+
+class LoginView(View):
+    
+    def post(self, request):
+        username = request['username']
+
 

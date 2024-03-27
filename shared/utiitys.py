@@ -13,7 +13,25 @@ username_regex = re.compile(r"^[a-zA-Z0-9_.-]+$")
 
 
 def check_email_or_phone_number(input_data):
-    # phone_number = phonenumbers.parse(input_data)
+    if re.fullmatch(email_regex, input_data):
+        input_data = "email"
+
+    elif re.fullmatch(phone_number_regex, input_data):
+        input_data = "phone_number"
+
+    else:
+        data = {
+            "request status": "Terrible!",
+            "message": "email or phone number wrong!"
+        }
+        raise ValidationError(data)
+
+    return input_data
+
+
+
+
+def check_login_type(input_data):
     if re.fullmatch(email_regex, input_data):
         input_data = "email"
 

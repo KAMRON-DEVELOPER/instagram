@@ -11,6 +11,7 @@ from rest_framework.decorators import permission_classes
 from datetime import datetime, timedelta
 from rest_framework.validators import ValidationError
 from rest_framework.response import Response
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 
 
@@ -163,9 +164,7 @@ class ChangeUserPhotoView(UpdateAPIView):
 
 
 
-class LoginView(View):
-    
-    def post(self, request):
-        username = request['username']
+class LoginView(TokenObtainPairView):
+    serializer_class = LoginSerializer
 
 

@@ -215,7 +215,23 @@ class LoginSerializer(TokenObtainPairSerializer):
             'password' : data.get('password')
         }
 
-        user = authenticate(authentication_kwargs)
+        user = authenticate(**authentication_kwargs)
+        
+        if user is not None:
+            self.user = user
+        else:
+            raise ValidationError(
+                {
+                    'request status' : 'bad 404',
+                    'message' : 'user not found!'
+                }
+            )
+            
+        def validate(self, data):
+            self.auth_validate()
+            data = self.user.token()
+            data['auth_status'] = self.user.auth_status
+            return data
 
         
         

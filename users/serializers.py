@@ -6,7 +6,7 @@ from django.core.mail import send_mail
 from django.contrib.auth.password_validation import validate_password
 import re
 from django.core.validators import FileExtensionValidator
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
 from django.contrib.auth import authenticate
 
 
@@ -186,56 +186,65 @@ class ChangeUserPhotoSerializer(serializers.Serializer):
 
 
 class LoginSerializer(TokenObtainPairSerializer):
-    
+
     def __init__(self, *args, **kwargs):
         super(LoginSerializer, self).__init__(*args, **kwargs)
         self.fields['user_input'] = serializers.CharField(required=True)
         self.fields['username'] = serializers.CharField(required=False, read_only=True)
-        
+
     def auth_validate(self, data):
         user_input = data.get('user_input')
-        
-        if check_login_type(user_input) == "username":
+        if check_login_type(user_input) == 'username':
             username = user_input
         elif check_login_type(user_input) == "email":
-            user = User.objects.get(email__iexact=user_input)
+            user = self.get_user(email__iexact=user_input)
             username = user.username
-        elif check_login_type(user_input) == "phone_number":
-            user = User.objects.get(phone_number__iexact=user_input)
+        elif check_login_type(user_input) == 'phone_number':
+            user = self.get_user(phone_number=user_input)
             username = user.username
         else:
             data = {
-                "request status": "Terrible!",
-                "message": "Login Interrupted!"
+                'request status': "bad 404",
+                'message': "check_login_type is not valid."
             }
             raise ValidationError(data)
-        
+
         authentication_kwargs = {
-            self.username_field : username,
-            'password' : data.get('password')
+            self.username_field: username,
+            'password': data['password']
         }
 
         user = authenticate(**authentication_kwargs)
-        
         if user is not None:
             self.user = user
         else:
+            data = {
+                'request status': "bad 404",
+                'message': "user is None."
+            }
+            raise ValidationError(data)
+
+    def validate(self, data):
+        self.auth_validate(data)
+        data = self.user.token()
+        data['auth_status'] = self.user.auth_status
+        data['full_name'] = self.user.full_name
+        return data
+
+    def get_user(self, **kwargs):
+        users = User.objects.filter(**kwargs)
+        if not users.exists():
             raise ValidationError(
                 {
-                    'request status' : 'bad 404',
-                    'message' : 'user not found!'
+                    "message": "No active account found"
                 }
             )
-            
-        def validate(self, data):
-            self.auth_validate()
-            data = self.user.token()
-            data['auth_status'] = self.user.auth_status
-            return data
+        return users.first()
 
         
         
-
+class LoginRefreshSerializer(TokenRefreshSerializer):
+    pass
 
 
 

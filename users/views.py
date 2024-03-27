@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.views import View
 
 from shared.utiitys import send_email
 from .models import AUTH_STATUS, AUTH_TYPE, User, UserConfirmation

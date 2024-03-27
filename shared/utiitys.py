@@ -31,12 +31,15 @@ def check_email_or_phone_number(input_data):
 
 
 
-def check_login_type(input_data):
-    if re.fullmatch(email_regex, input_data):
-        input_data = "email"
+def check_login_type(login_type):
+    if re.fullmatch(email_regex, login_type):
+        login_type = "email"
 
-    elif re.fullmatch(phone_number_regex, input_data):
-        input_data = "phone_number"
+    elif re.fullmatch(phone_number_regex, login_type):
+        login_type = "phone_number"
+        
+    elif re.fullmatch(username_regex, login_type):
+        login_type = "username"
 
     else:
         data = {
@@ -45,7 +48,7 @@ def check_login_type(input_data):
         }
         raise ValidationError(data)
 
-    return input_data
+    return login_type
 
 
 

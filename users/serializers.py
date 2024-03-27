@@ -1,12 +1,13 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-from shared.utiitys import check_email_or_phone_number, send_email, send_phone_code
+from shared.utiitys import check_email_or_phone_number, send_email, send_phone_code, check_login_type
 from .models import User, UserConfirmation, AUTH_STATUS, AUTH_TYPE, USER_GENDER, USER_ROLES
 from django.core.mail import send_mail
 from django.contrib.auth.password_validation import validate_password
 import re
 from django.core.validators import FileExtensionValidator
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from django.contrib.auth import authenticate
 
 
 
@@ -188,8 +189,34 @@ class LoginSerializer(TokenObtainPairSerializer):
     
     def __init__(self, *args, **kwargs):
         super(LoginSerializer, self).__init__(*args, **kwargs)
-        self.fields['userinput'] = serializers.CharField(required=True)
+        self.fields['user_input'] = serializers.CharField(required=True)
         self.fields['username'] = serializers.CharField(required=False, read_only=True)
+        
+    def auth_validate(self, data):
+        user_input = data.get('user_input')
+        
+        if check_login_type(user_input) == "username":
+            username = user_input
+        elif check_login_type(user_input) == "email":
+            user = User.objects.get(email__iexact=user_input)
+            username = user.username
+        elif check_login_type(user_input) == "phone_number":
+            user = User.objects.get(phone_number__iexact=user_input)
+            username = user.username
+        else:
+            data = {
+                "request status": "Terrible!",
+                "message": "Login Interrupted!"
+            }
+            raise ValidationError(data)
+        
+        authentication_kwargs = {
+            self.username_field : username,
+            'password' : data.get('password')
+        }
+
+        user = authenticate(authentication_kwargs)
+
         
         
 

@@ -244,7 +244,10 @@ class LoginSerializer(TokenObtainPairSerializer):
         
         
 class LoginRefreshSerializer(TokenRefreshSerializer):
-    pass
+    
+    def validate(self, data):
+        data = super().validate(data)
+        access_token_instance = 1
 
 
 

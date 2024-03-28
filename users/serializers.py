@@ -252,7 +252,7 @@ class LoginRefreshSerializer(TokenRefreshSerializer):
         data = super().validate(attrs)
         access_token_instance = AccessToken(data['access'])
         user_id = access_token_instance['user_id']
-        user = get_object_or_404(User, user_id)
+        user = get_object_or_404(User, id=user_id)
         update_last_login(None, user)
         return data
 

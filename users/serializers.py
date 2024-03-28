@@ -247,7 +247,7 @@ class LoginRefreshSerializer(TokenRefreshSerializer):
     
     def validate(self, data):
         data = super().validate(data)
-        access_token_instance = 1
+        access_token_instance = AccessToken
 
 
 

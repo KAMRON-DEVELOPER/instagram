@@ -1,6 +1,6 @@
 from rest_framework.generics import get_object_or_404
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError, NotFound
 from shared.utiitys import check_email_or_phone_number, send_email, send_phone_code, check_login_type
 from .models import User, UserConfirmation, AUTH_STATUS, AUTH_TYPE, USER_GENDER, USER_ROLES
 from django.core.mail import send_mail
@@ -11,6 +11,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, Toke
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import update_last_login
 from rest_framework_simplejwt.tokens import AccessToken
+from django.db.models import Q
 
 
 
@@ -264,8 +265,22 @@ class LoguotSerializer(serializers.Serializer):
 
 
 
-
-
+class ForgotPasswordSerializer(serializers.Serializer):
+    email_or_phone = serializers.CharField(read_only=True, required=True)
+    
+    def validate(self, attrs):
+        email_or_phone = attrs.get('email_or_phone', None)
+        if email_or_phone is None:
+            raise ValidationError(
+                {
+                    'request status': "bad 404",
+                    'message': "email or phone number is invalid!"
+                }
+            )
+        user = User.objects.filter(Q(phone_number=email_or_phone) | Q(email=email_or_phone))
+        if not user.exists():
+            raise NotFound(detail="users not found!")
+        return attrs
 
 
 

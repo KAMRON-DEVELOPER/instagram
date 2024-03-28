@@ -1,3 +1,4 @@
+from rest_framework.generics import get_object_or_404
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from shared.utiitys import check_email_or_phone_number, send_email, send_phone_code, check_login_type
@@ -8,6 +9,8 @@ import re
 from django.core.validators import FileExtensionValidator
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
 from django.contrib.auth import authenticate
+from django.contrib.auth.models import update_last_login
+from rest_framework_simplejwt.tokens import AccessToken
 
 
 
@@ -245,9 +248,13 @@ class LoginSerializer(TokenObtainPairSerializer):
         
 class LoginRefreshSerializer(TokenRefreshSerializer):
     
-    def validate(self, data):
-        data = super().validate(data)
-        access_token_instance = AccessToken
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        access_token_instance = AccessToken(data['access'])
+        user_id = access_token_instance['user_id']
+        user = get_object_or_404(User, user_id)
+        update_last_login(None, user)
+        return data
 
 
 

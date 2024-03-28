@@ -266,24 +266,22 @@ class LoguotSerializer(serializers.Serializer):
 
 
 class ForgotPasswordSerializer(serializers.Serializer):
-    email_or_phone = serializers.CharField(read_only=True)
-    
+    email_or_phone = serializers.CharField(write_only=True, required=True)
+
     def validate(self, attrs):
         email_or_phone = attrs.get('email_or_phone', None)
-        print(email_or_phone)
         if email_or_phone is None:
             raise ValidationError(
                 {
-                    'request status': "bad 404",
-                    'message': "email or phone number is invalid!"
+                    "success": False,
+                    'message': "Email yoki telefon raqami kiritilishi shart!"
                 }
             )
         user = User.objects.filter(Q(phone_number=email_or_phone) | Q(email=email_or_phone))
         if not user.exists():
-            raise NotFound(detail="users not found!")
-        attrs["user"] = user.first()
+            raise NotFound(detail="User not found")
+        attrs['user'] = user.first()
         return attrs
-
 
 
 

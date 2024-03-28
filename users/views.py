@@ -100,8 +100,6 @@ class GetNewVerifyApiView(APIView):
 class ChangeUserView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
     
-    print("ChangeUser view ishladi!")
-    
     def post(self, request, *args, **kwargs):
         first_name = self.request
         print(first_name)
@@ -205,13 +203,13 @@ class LogoutView(APIView):
 
 
 class ForgotPasswordView(APIView):
-    permission_classes = [permissions.IsAuthenticated,]
+    permission_classes = [permissions.AllowAny,]
     serializer_class = ForgotPasswordSerializer
     
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=self.request.data)
         serializer.is_valid(raise_exception=True)
-        email_or_phone = serializer.data.get('email_or_phone')
+        email_or_phone = serializer.validated_data.get('email_or_phone')
         user = serializer.validated_data.get('user')
         if check_email_or_phone_number(email_or_phone) == AUTH_TYPE.email:
             code = user.create_verify_code(AUTH_TYPE.email)
@@ -224,7 +222,7 @@ class ForgotPasswordView(APIView):
                 'request status' : 'ok 200',
                 'message' : 'code has been send to your email',
                 'access' : user.token()['access'],
-                'refresh' : user.token()['refresh']
+                'refresh' : user.token()['refresh_token']
             }
         )
             

@@ -266,10 +266,11 @@ class LoguotSerializer(serializers.Serializer):
 
 
 class ForgotPasswordSerializer(serializers.Serializer):
-    email_or_phone = serializers.CharField(read_only=True, required=True)
+    email_or_phone = serializers.CharField(read_only=True)
     
     def validate(self, attrs):
         email_or_phone = attrs.get('email_or_phone', None)
+        print(email_or_phone)
         if email_or_phone is None:
             raise ValidationError(
                 {

@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from django.views import View
 
-from shared.utiitys import send_email
+from shared.utiitys import check_email_or_phone_number, send_email
 from .models import AUTH_STATUS, AUTH_TYPE, User, UserConfirmation
-from .serializers import SignUpSerializer, ChangeUserData, ChangeUserPhotoSerializer, LoginSerializer, LoginRefreshSerializer, LoguotSerializer
+from .serializers import SignUpSerializer, ChangeUserData, ChangeUserPhotoSerializer, LoginSerializer, LoginRefreshSerializer, LoguotSerializer, ForgotPasswordSerializer
 from rest_framework import permissions
 from rest_framework.generics import CreateAPIView, UpdateAPIView
 from rest_framework.views import APIView
@@ -201,5 +201,33 @@ class LogoutView(APIView):
         return Response(data, status=404)
                 
                 
+
+
+
+class ForgotPasswordView(APIView):
+    permission_classes = [permissions.IsAuthenticated,]
+    serializer_class = ForgotPasswordSerializer
+    
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=self.request.data)
+        serializer.is_valid(raise_exception=True)
+        email_or_phone = serializer.data.get('email_or_phone')
+        user = serializer.validated_data.get('user')
+        if check_email_or_phone_number(email_or_phone) == AUTH_TYPE.email:
+            code = user.create_verify_code(AUTH_TYPE.email)
+            send_email(email_or_phone, code)
+        elif check_email_or_phone_number(email_or_phone) == AUTH_TYPE.phone_number:
+            code = user.create_verify_code(AUTH_TYPE.phone_number)
+            send_email(email_or_phone, code)
+        return Response(
+            {
+                'request status' : 'ok 200',
+                'message' : 'code has been send to your email',
+                'access' : user.token()['access'],
+                'refresh' : user.token()['refresh']
+            }
+        )
+            
+
 
 

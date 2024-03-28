@@ -280,6 +280,7 @@ class ForgotPasswordSerializer(serializers.Serializer):
         user = User.objects.filter(Q(phone_number=email_or_phone) | Q(email=email_or_phone))
         if not user.exists():
             raise NotFound(detail="users not found!")
+        attrs["user"] = user.first()
         return attrs
 
 

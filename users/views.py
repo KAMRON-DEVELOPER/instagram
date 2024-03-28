@@ -3,7 +3,7 @@ from django.views import View
 
 from shared.utiitys import check_email_or_phone_number, send_email
 from .models import AUTH_STATUS, AUTH_TYPE, User, UserConfirmation
-from .serializers import SignUpSerializer, ChangeUserData, ChangeUserPhotoSerializer, LoginSerializer, LoginRefreshSerializer, LoguotSerializer, ForgotPasswordSerializer
+from .serializers import SignUpSerializer, ChangeUserData, ChangeUserPhotoSerializer, LoginSerializer, LoginRefreshSerializer, LoguotSerializer, ForgotPasswordSerializer, ResetPasswordSerializer
 from rest_framework import permissions
 from rest_framework.generics import CreateAPIView, UpdateAPIView
 from rest_framework.views import APIView
@@ -14,6 +14,8 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
+from rest_framework.exceptions import NotFound
+from django.core.exceptions import ObjectDoesNotExist
 
 
 
@@ -231,3 +233,28 @@ class ForgotPasswordView(APIView):
 
 
 
+
+class ResetPasswordView(UpdateAPIView):
+    permission_classes = [permissions.IsAuthenticated,]
+    http_method_names = ['patch', 'put']
+    # model = User
+    serializer_class = ResetPasswordSerializer
+
+    def get_object(self):
+        return self.request.user
+
+    def update(self, request, *args, **kwargs):
+        response = super(ResetPasswordView, self).update(request, *args, **kwargs)
+        try:
+            user = User.objects.get(id=response.data.get('id'))
+        except ObjectDoesNotExist:
+            raise NotFound(detail='User not found')
+        return Response(
+            {
+                'request status' : 'ok 200',
+                'message' : 'sizning passworindiz muvaffaqiyatli o\'zgartirildi.',
+                "access": user.token()['access'],
+                "refresh": user.token()['refresh_token'],
+                "user_status": user.auth_status,
+            }
+        )

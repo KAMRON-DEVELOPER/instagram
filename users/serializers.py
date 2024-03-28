@@ -257,5 +257,16 @@ class LoginRefreshSerializer(TokenRefreshSerializer):
         return data
 
 
+class LoguotSerializer(serializers.Serializer):
+    refresh = serializers.CharField()
+    
+    
+
+
+
+
+
+
+
 
 

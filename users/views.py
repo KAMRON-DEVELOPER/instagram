@@ -3,7 +3,7 @@ from django.views import View
 
 from shared.utiitys import send_email
 from .models import AUTH_STATUS, AUTH_TYPE, User, UserConfirmation
-from .serializers import SignUpSerializer, ChangeUserData, ChangeUserPhotoSerializer, LoginSerializer, LoginRefreshSerializer
+from .serializers import SignUpSerializer, ChangeUserData, ChangeUserPhotoSerializer, LoginSerializer, LoginRefreshSerializer, LoguotSerializer
 from rest_framework import permissions
 from rest_framework.generics import CreateAPIView, UpdateAPIView
 from rest_framework.views import APIView
@@ -12,6 +12,8 @@ from datetime import datetime, timedelta
 from rest_framework.validators import ValidationError
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.exceptions import TokenError
 
 
 
@@ -172,5 +174,32 @@ class LoginView(TokenObtainPairView):
 
 class LoginRefreshView(TokenRefreshView):
     serializer_class = LoginRefreshSerializer
+
+
+
+class LogoutView(APIView):
+    permission_classes = [permissions.IsAuthenticated,]
+    serializer_class = LoguotSerializer
+    
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=self.request.data)
+        serializer.is_valid(raise_exception=True)
+        try:
+            refresh_token = self.request.data['refresh']
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            data = {
+            'request status': "ok 200",
+            'message': "you have successfully logged out!"
+            }
+            return Response(data, status=205)
+        except TokenError:
+            data = {
+            'request status': "bad 404",
+            'message': "your refresh token is invalid, so you can not logout!"
+        }
+        return Response(data, status=404)
+                
+                
 
 

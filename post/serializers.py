@@ -75,44 +75,20 @@ class CommentSerializer(serializers.ModelSerializer):
 class CommentLikeSerializer(serializers.ModelSerializer):
     id = serializers.UUIDField(read_only=True)
     author = UserSerializer(read_only=True)
-    comment_likes_count = serializers.SerializerMethodField('get_comment_likes_count')
-    did_i_like = serializers.SerializerMethodField('get_did_i_like')
     
     class Meta:
         model = CommentLike
-        fields = ['id', 'author', 'comment', 'comment_likes_count', 'get_did_i_like']
-        
-    def get_did_i_like(self, obj):
-        user = self.context.get('request').user
-        if user.is_authenticated:
-            return user.likes.filter(author=user).exists()
-        else:
-            return False
-
-    def get_comment_likes_count(self, obj):
-        return obj.likes.count()
+        fields = ['id', 'author', 'comment']
 
 
 
 class PostLikeSerializer(serializers.ModelSerializer):
     id = serializers.UUIDField(read_only=True)
     author = UserSerializer(read_only=True)
-    post_likes_count = serializers.SerializerMethodField('get_post_likes_count')
-    did_i_like = serializers.SerializerMethodField('get_did_i_like')
     
     class Meta:
         model = PostLike
-        fields = ['id', 'author', 'post', 'comment_likes_count', 'get_did_i_like']
-        
-    def get_did_i_like(self, obj):
-        user = self.context.get('request').user
-        if user.is_authenticated:
-            return user.likes.filter(author=user).exists()
-        else:
-            return False
-
-    def get_post_likes_count(self, obj):
-        return obj.likes.count()
+        fields = ['id', 'author', 'post']
 
 
 

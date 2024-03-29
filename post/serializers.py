@@ -66,3 +66,14 @@ class CommentSerializer(serializers.ModelSerializer):
             return user.likes.filter(author=user).exists()
         else:
             return False
+        
+    def get_comment_likes_count(self, obj):
+        return obj.likes.count()
+
+
+
+
+
+
+
+

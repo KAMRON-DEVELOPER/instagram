@@ -18,16 +18,40 @@ class PostSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
     post_likes_count = serializers.SerializerMethodField('get_post_likes_count')
     post_comments_count = serializers.SerializerMethodField('get_post_comments_count')
+    did_i_like = serializers.SerializerMethodField('get_did_i_like')
     
     class Meta:
         model = Post
-        fields = ['id', 'title', 'author', 'body', 'post_image', 'created_time', 'post_likes_count', 'post_comments_count']
+        fields = ['id', 'title', 'author', 'body', 'post_image', 'created_time', 'post_likes_count', 'post_comments_count', 'did_i_like']
 
     def get_post_likes_count(self, obj):
         return obj.likes.count()
     
     def get_post_comments_count(self, obj):
         return obj.comments.count()
+
+    def get_did_i_like(self, obj):
+        request = self.context.get('request', None)
+        if request and request.user.is_authenticated:
+            try:
+                like = PostLike.objects.get(post=obj, author=request.user)
+                return True
+            except PostLike.DoesNotExist:
+                return False
+        return False
+
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField(read_only=True)
+    author = UserSerializer(read_only=True)
+    post_likes_count = serializers.SerializerMethodField('get_post_likes_count')
+    
+    class Meta:
+        model = PostComment
+        fields = ['id', 'author', 'comment', 'parent', 'created_time']
+
+
 
 
 

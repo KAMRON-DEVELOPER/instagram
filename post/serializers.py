@@ -24,7 +24,8 @@ class PostSerializer(serializers.ModelSerializer):
         model = Post
         fields = ['id', 'title', 'author', 'body', 'post_image', 'created_time', 'post_likes_count', 'post_comments_count', 'did_i_like']
 
-    def get_post_likes_count(self, obj):
+    @staticmethod
+    def get_post_likes_count(obj):
         return obj.likes.count()
     
     def get_post_comments_count(self, obj):
@@ -66,8 +67,9 @@ class CommentSerializer(serializers.ModelSerializer):
             return user.likes.filter(author=user).exists()
         else:
             return False
-        
-    def get_comment_likes_count(self, obj):
+    
+    @staticmethod
+    def get_comment_likes_count(obj):
         return obj.likes.count()
 
 

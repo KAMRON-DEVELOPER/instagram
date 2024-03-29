@@ -8,6 +8,7 @@ from django.db.models import UniqueConstraint
 
 
 class Post(BaseModel):
+    '''title, author, body, post_image'''
     title = models.CharField(max_length=50)
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts') # User.posts.all()
     body = models.TextField()
@@ -25,6 +26,7 @@ class Post(BaseModel):
 
 
 class PostComment(BaseModel):
+    '''author, post, comment, parent'''
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments") # Post.comments.all() all comments related one Post
     comment = models.TextField()
@@ -34,6 +36,7 @@ class PostComment(BaseModel):
 
 
 class PostLike(BaseModel):
+    '''author, post'''
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="likes")
     
@@ -43,6 +46,7 @@ class PostLike(BaseModel):
 
 
 class CommentLike(BaseModel):
+    '''author, comment'''
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     comment = models.ForeignKey(PostComment, on_delete=models.CASCADE, related_name="comment_likes")
     

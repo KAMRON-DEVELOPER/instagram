@@ -9,3 +9,9 @@ class PostCommentAdmin(admin.ModelAdmin):
     list_display = ['author', 'post', 'created_time']
     
 
+class PostLikeAdmin(admin.ModelAdmin):
+    list_display = ['author', 'post', 'created_time']
+
+
+class PostLikeAdmin(admin.ModelAdmin):
+    list_display = ['author', 'post', 'created_time']

@@ -77,6 +77,7 @@ class PostRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
 
 class PostCommentListAPIView(ListAPIView):
     
+    permission_classes = [permissions.AllowAny,]
     queryset = PostComment.objects.all()
     serializer_class = PostCommentSerializer
 

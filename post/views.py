@@ -11,8 +11,11 @@ from rest_framework import permissions
 class PostListAPIView(ListAPIView):
     
     permission_classes = [permissions.AllowAny,]
-    queryset = Post.objects.all()
+    # queryset = Post.objects.all()
     serializer_class = PostSerializer
+    
+    def get_queryset(self):
+        return Post.objects.all()
 
 
 

@@ -43,7 +43,7 @@ class PostListCreateAPIView(ListCreateAPIView):
 
 
 
-class PostRetrieveAPIView(RetrieveAPIView):
+class PostRetrieveAPIView(RetrieveUpdateDestroyAPIView):
 
     permission_classes = [permissions.AllowAny,]
     queryset = Post.objects.all()

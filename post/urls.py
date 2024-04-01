@@ -9,6 +9,7 @@ urlpatterns = [
     path('', PostListAPIView.as_view()),
     path('create/', PosCreateAPIView.as_view()),
     path('<uuid:pk>/', PostRetrieveUpdateDestroyAPIView.as_view()),
+    path('comments/', PostCommentListAPIView.as_view()),
 ]
 
 

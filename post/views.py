@@ -15,7 +15,7 @@ class PostListAPIView(ListAPIView):
     permission_classes = [permissions.AllowAny,]
     # queryset = Post.objects.all()
     serializer_class = PostSerializer
-    pagination_class = CustomPagination()
+    pagination_class = CustomPagination
     
     def get_queryset(self):
         return Post.objects.all()
@@ -37,7 +37,7 @@ class PostListCreateAPIView(ListCreateAPIView):
     queryset = Post.objects.all()
     permission_classes = [permissions.IsAuthenticated,]
     serializer_class = PostSerializer
-    pagination_class = CustomPagination()
+    pagination_class = CustomPagination
     
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -62,5 +62,22 @@ class PostRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
                 'message': serializer.data
             }
         )
+
+    def delete(self, request, *args, **kwargs):
+        post = self.get_object()
+        post.delete()
+        return Response(
+            {
+                'request status' : 'ok 200',
+                'message': "request has been deleted!"
+            }
+        )
+
+
+
+class PostCommentListAPIView(ListAPIView):
+    
+    queryset = PostComment.objects.all()
+    serializer_class = PostCommentSerializer
 
 

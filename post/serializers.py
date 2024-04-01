@@ -6,10 +6,11 @@ from .models import Post, PostComment, PostLike, CommentLike
 
 
 class UserSerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField(read_only=True)
     
     class Meta:
         model = User
-        fields = ['username', 'first_name', 'last_name', 'email', 'phone_number', 'date_of_birth', 'user_gender']
+        fields = [ 'id','username', 'photo', 'first_name', 'last_name', 'email', 'phone_number', 'date_of_birth', 'user_gender']
 
 
 

@@ -16,7 +16,7 @@ class Post(BaseModel):
                                    validators=[FileExtensionValidator(allowed_extensions=['jpg', 'png'])])
     
     class Meta:
-        db_table = "posts" # default post_post 1-app name, 2-model name
+        db_table = "posts"
         verbose_name = "post"
         verbose_name_plural = "posts"
         
@@ -32,6 +32,8 @@ class PostComment(BaseModel):
     comment = models.TextField()
     parent = models.ForeignKey('self', on_delete=models.CASCADE, related_name='children', null=True, blank=True)
 
+    def __str__(self):
+        return self.comment
 
 
 
@@ -47,6 +49,9 @@ class PostLike(BaseModel):
                 name='postLikeUnique'
                 )
             ]
+        
+    def __str__(self):
+        return f"liked by {self.author}"
     
 
 
@@ -63,3 +68,5 @@ class CommentLike(BaseModel):
                 )
             ]
 
+        def __str__(self):
+            return f"comment like by {self.author}"

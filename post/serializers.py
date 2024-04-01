@@ -44,7 +44,7 @@ class PostSerializer(serializers.ModelSerializer):
 
 
 
-class CommentSerializer(serializers.ModelSerializer):
+class PostCommentSerializer(serializers.ModelSerializer):
     id = serializers.UUIDField(read_only=True)
     author = UserSerializer(read_only=True)
     replies = serializers.SerializerMethodField('get_replies')

@@ -6,7 +6,7 @@ from .views import *
 
 
 urlpatterns = [
-    # path()
+    path('', PostListAPIView.as_view()),
 ]
 
 

@@ -78,7 +78,11 @@ class PostRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
 class PostCommentListAPIView(ListAPIView):
     
     permission_classes = [permissions.AllowAny,]
-    queryset = PostComment.objects.all()
     serializer_class = PostCommentSerializer
+    
+    def get_queryset(self):
+        post_id = self.kwargs['id']
+        queryset = PostComment.objects.filter(post__id = post_id)
+        return queryset
 
 

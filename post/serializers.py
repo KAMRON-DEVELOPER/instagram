@@ -25,6 +25,8 @@ class PostSerializer(serializers.ModelSerializer):
         model = Post
         fields = ['id', 'title', 'author', 'body', 'post_image', 'created_time', 'post_likes_count', 'post_comments_count', 'did_i_like']
 
+    extra_kwargs = {"image" : {"required" : False}}
+
     @staticmethod
     def get_post_likes_count(obj):
         return obj.likes.count()

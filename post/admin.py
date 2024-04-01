@@ -5,5 +5,7 @@ class PostAdmin(admin.ModelAdmin):
     list_display = ['title', 'author', 'created_time']
 
 
-class PostAdmin(admin.ModelAdmin):
-    list_display = ['title', 'author', 'created_time']
+class PostCommentAdmin(admin.ModelAdmin):
+    list_display = ['author', 'post', 'created_time']
+    
+

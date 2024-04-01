@@ -5,6 +5,7 @@ from rest_framework.generics import ListAPIView, CreateAPIView, DestroyAPIView, 
 from rest_framework.views import APIView
 from rest_framework import permissions
 from shared.pagination import CustomPagination
+from rest_framework.response import Response
 
 
 
@@ -43,13 +44,23 @@ class PostListCreateAPIView(ListCreateAPIView):
 
 
 
-class PostRetrieveAPIView(RetrieveUpdateDestroyAPIView):
+class PostRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
 
     permission_classes = [permissions.AllowAny,]
     queryset = Post.objects.all()
     serializer_class = PostSerializer
+    
 
-
-
+    def put(self, request, *args, **kwargs):
+        post = self.get_object()
+        serializer = self.serializer_class(post, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(
+            {
+                'request status' : 'ok 200',
+                'message': serializer.data
+            }
+        )
 
 

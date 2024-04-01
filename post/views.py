@@ -88,10 +88,9 @@ class PostCommentListAPIView(ListAPIView):
 
 
 class PostCommentCreateAPIView(CreateAPIView):
-    
-    permission_classes = [permissions.AllowAny,]
     serializer_class = PostCommentSerializer
-    
+    permission_classes = [permissions.IsAuthenticated, ]
+
     def perform_create(self, serializer):
         post_id = self.kwargs['pk']
         serializer.save(author=self.request.user, post_id=post_id)

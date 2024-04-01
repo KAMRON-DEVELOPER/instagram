@@ -86,3 +86,15 @@ class PostCommentListAPIView(ListAPIView):
         return queryset
 
 
+
+class PostCommentCreateAPIView(CreateAPIView):
+    
+    permission_classes = [permissions.AllowAny,]
+    serializer_class = PostCommentSerializer
+    
+    def perform_create(self, serializer):
+        post_id = self.kwargs['id']
+        serializer.save(author=self.request.user, post_id=post_id)
+
+
+

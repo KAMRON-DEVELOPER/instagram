@@ -50,29 +50,39 @@ class PostCommentSerializer(serializers.ModelSerializer):
     id = serializers.UUIDField(read_only=True)
     author = UserSerializer(read_only=True)
     replies = serializers.SerializerMethodField('get_replies')
-    did_i_like = serializers.SerializerMethodField('get_did_i_like')
-    comment_likes_count = serializers.SerializerMethodField('get_comment_likes_count')
-    
+    me_liked = serializers.SerializerMethodField('get_me_liked')
+    likes_count = serializers.SerializerMethodField('get_likes_count')
+
     class Meta:
         model = PostComment
-        fields = ['id', 'author', 'comment', 'parent', 'created_time', 'replies', 'comment_likes_count', 'did_i_like']
+        fields = [
+            "id",
+            "author",
+            "comment",
+            "post",
+            "parent",
+            "created_time",
+            "replies",
+            "me_liked",
+            "likes_count",
+          ]
 
     def get_replies(self, obj):
-        if obj.children.exists():
-            serializers = self.__class__(obj.cildren.all(), many=True, context=self.context) # bu orqali CommentSerializerni o'ziga murojat etamiz va undan barcha likelarni olamiz.
+        if obj.child.exists():
+            serializers = self.__class__(obj.child.all(), many=True, context=self.context)
             return serializers.data
         else:
             return None
-    
-    def get_did_i_like(self, obj):
+
+    def get_me_liked(self, obj):
         user = self.context.get('request').user
         if user.is_authenticated:
-            return user.likes.filter(author=user).exists()
+            return obj.likes.filter(author=user).exists()
         else:
             return False
-    
+
     @staticmethod
-    def get_comment_likes_count(obj):
+    def get_likes_count(obj):
         return obj.likes.count()
 
 

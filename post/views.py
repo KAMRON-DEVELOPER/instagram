@@ -93,7 +93,7 @@ class PostCommentCreateAPIView(CreateAPIView):
     serializer_class = PostCommentSerializer
     
     def perform_create(self, serializer):
-        post_id = self.kwargs['id']
+        post_id = self.kwargs['pk']
         serializer.save(author=self.request.user, post_id=post_id)
 
 

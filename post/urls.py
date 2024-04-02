@@ -21,7 +21,7 @@ urlpatterns = [
     path('comments/<uuid:pk>/likes/create/', CommentsLikesCreateAPIView.as_view()),
     path('likes/', LikesListCreateAPIView.as_view()),
     
-    path('<uuid:pk>/create-delete-like/', PostLikeAPIView.as_view()),
+    path('<uuid:pk>/create-delete-like/', PostLikesAPIView.as_view()),
     path('<uuid:pk>/create-delete-like/comment/', CommentLikeAPIView.as_view()),
 ]
 

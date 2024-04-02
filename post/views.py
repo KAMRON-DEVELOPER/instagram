@@ -232,6 +232,24 @@ class PostLikeAPIView(APIView):
 
 
 
+class PostLikesAPIView(APIView):
+    
+    def post(self, request, pk):
+        try:
+            post_likes = PostLike.objects.get(author=self.request.user, post_id=pk)
+            post_likes.delete()
+            return Response({"data" : "you not liked?"})
+        except PostLike.DoesNotExist:
+            post_like = PostLike.objects.create(author=self.request.user, post_id=pk)
+            return Response(
+                {
+                    "data" : "you liked!",
+                    "request" : PostLikeSerializer(post_like).data
+                }
+            )
+
+
+
 class CommentLikeAPIView(APIView):
     
     def get(self, request, pk):

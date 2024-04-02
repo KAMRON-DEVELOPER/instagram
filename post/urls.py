@@ -18,6 +18,7 @@ urlpatterns = [
     path('comments/', CommentsListCreateAPIView.as_view()),
     path('comments/<uuid:pk>/', CommentsRetreiveAPIView.as_view()),
     path('comments/<uuid:pk>/likes/', CommentsLikesListAPIView.as_view()),
+    path('comments/<uuid:pk>/likes/create/', CommentsLikesCreateAPIView.as_view()),
     path('likes/', LikesListCreateAPIView.as_view()),
 ]
 

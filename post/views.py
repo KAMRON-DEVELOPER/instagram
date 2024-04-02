@@ -97,3 +97,15 @@ class PostCommentCreateAPIView(CreateAPIView):
 
 
 
+class CommentsListCreateAPIView(ListCreateAPIView):
+    
+    permission_classes = [permissions.AllowAny,]
+    queryset = PostComment.objects.all()
+    serializer_class = PostCommentSerializer
+    
+    
+
+
+
+
+

@@ -119,6 +119,44 @@ class LikesListCreateAPIView(ListCreateAPIView):
     
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+        
+        
+        
+        
+class LikesListAPIView(ListAPIView):
+    
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly,]
+    serializer_class = PostLikeSerializer
+    
+    def get_queryset(self):
+        post_id = self.kwargs["pk"]
+        return PostLike.objects.filter(post_id=post_id)
 
 
 
+class LikesCreateAPIView(CreateAPIView):
+    
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly,]
+    serializer_class = PostLikeSerializer
+    
+    def get_queryset(self):
+        post_id = self.kwargs["pk"]
+        return PostLike.objects.filter(post_id=post_id)
+    
+    def perform_create(self, serializer):
+        post_id = self.kwargs["pk"]
+        serializer.save(author=self.request.user, post_id=post_id)
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        

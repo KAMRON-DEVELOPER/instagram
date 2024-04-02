@@ -190,7 +190,44 @@ class CommentsLikesCreateAPIView(CreateAPIView):
 
 
 
-
-
+class PostLikeAPIView(APIView):
+    
+    def post(self, request, pk):
+        try:
+            post_like = PostLike.objects.create(author=self.request.user, post_id=pk)
+            serializer = PostLikeSerializer(post_like)
+            return Response(
+                {
+                    "status" : "ok 200",
+                    "message" : "liked the post",
+                    "data" : serializer.data
+                }
+            )
+        except Exception as e:
+            return Response(
+                {
+                    "status" : "bad 400",
+                    "message" : f"{e}",
+                    "data" : None
+                }
+            )
+    
+    def delete(self, request, pk):
+        try:
+            delete_like = PostLike.objects.get(author=self.request.user, post_id=pk)
+            delete_like.delete()
+            return Response(
+                    {
+                        "status" : "ok 200",
+                        "message" : "deleted the like!"
+                    }
+                )
+        except Exception as e:
+            return Response(
+                {
+                    "status" : "bad 400",
+                    "message" : "somthing went wrong while deleting the like!"
+                }
+            )
 
         

@@ -160,13 +160,23 @@ class CommentLikesListAPIView(ListAPIView):
         
         
         
-class CommentsRetreiveCreateAPIView(RetrieveAPIView):
+class CommentsRetreiveAPIView(RetrieveAPIView):
     
     permission_classes = [permissions.IsAuthenticated,]
-    queryset = PostComment.objects.all()
     serializer_class = PostCommentSerializer
+    queryset = PostComment.objects.all()
         
         
         
-        
+class CommentsLikesListAPIView(ListAPIView):
+    
+    permission_classes = [permissions.AllowAny,]
+    serializer_class = PostCommentSerializer
+    
+    def get_queryset(self):
+        return PostComment.likes.all()
+
+
+
+      
         

@@ -111,7 +111,14 @@ class CommentsListCreateAPIView(ListCreateAPIView):
     
     
 
-
+class LikesListCreateAPIView(ListCreateAPIView):
+    
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly,]
+    queryset = PostLike.objects.all()
+    serializer_class = PostLikeSerializer
+    
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
 
 
 

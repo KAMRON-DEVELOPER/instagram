@@ -152,11 +152,11 @@ class LikesCreateAPIView(CreateAPIView):
 class CommentLikesListAPIView(ListAPIView):
     
     permission_classes = [permissions.AllowAny,]
-    serializer_class = PostCommentSerializer
+    serializer_class = CommentLikeSerializer
     
     def get_queryset(self):
         comment_id = self.kwargs["pk"]
-        return PostComment.objects.filter(comment_id=comment_id)
+        return CommentLike.objects.filter(comment_id=comment_id)
         
         
         
@@ -236,13 +236,15 @@ class CommentLikeAPIView(APIView):
     
     def get(self, request, pk):
         try:
-            comment = CommentLike.objects.filter(comment_id=pk)
-            return CommentLikeSerializer(comment)
+            comment_like = CommentLike.objects.all()
+            serializer = CommentLikeSerializer(comment_like).data
+            return Response({"data": serializer})
         except Exception as e:
             return Response(
                 {
                     "status" : "bad 400",
-                    "message" : "comment detail not worked!"
+                    "message" : "comment detail not worked!",
+                    "error" : f"{e}"
                 }
             )
     

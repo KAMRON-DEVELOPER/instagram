@@ -149,12 +149,22 @@ class LikesCreateAPIView(CreateAPIView):
         
         
         
+class CommentLikesListAPIView(ListAPIView):
+    
+    permission_classes = [permissions.AllowAny,]
+    serializer_class = PostCommentSerializer
+    
+    def get_queryset(self):
+        comment_id = self.kwargs["pk"]
+        return PostComment.objects.filter(comment_id=comment_id)
         
         
         
-        
-        
-        
+class CommentsRetreiveCreateAPIView(RetrieveAPIView):
+    
+    permission_classes = [permissions.IsAuthenticated,]
+    queryset = PostComment.objects.all()
+    serializer_class = PostCommentSerializer
         
         
         
